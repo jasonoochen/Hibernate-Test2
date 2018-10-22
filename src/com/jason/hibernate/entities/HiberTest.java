@@ -2,6 +2,8 @@ package com.jason.hibernate.entities;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -37,7 +39,73 @@ public class HiberTest {
 		session.close();
 		sessionFactory.close();
 	}
+	/*
+	 * 1.session.save()
+	 * 1).使一个临时对象变为持久化对象
+	 * 2).为对象分配ID
+	 * 3).在flush缓存时会发送一条insert语句
+	 * 4).在save方法之前的id是无效的
+	 * 5).持久化对象的ID是不能被修改的
+	 */
+	/*
+	 * persist():也会执行insert操作
+	 * 和save()的区别：
+	 * 在调用persist方法之前，若对象已经有ID了，就不会执行insert,而是抛出异常
+	 */
+	/*
+	 * session.get()
+	 * session.load()
+	 * 1.执行get()会立即加载对象（进行数据库查询，从数据库获取对象）（立即检索）
+	 *   执行load方法，若不适用该对象，则不执行查询操作，而返回一个代理对象（延迟检索）
+	 *   （不立即进行数据库查询，直到需要用了才加载对象）
+	 * 2.若对数据表中没有的对应的记录，且session也没有被关闭，同时需要使用对象时：
+	 *   get: 返回null
+	 *   load: 若不适用该对象的任何属性，没问题；若需要初始化了，抛出异常
+	 * 3.load方法可能会抛出LazyInitializationException异常
+	 *   在需要初始化代理对象之前已经关闭了session,抛出懒加载异常
+	 */
 	
+	@Test
+	public void testLoad(){
+		
+		News news = (News) session.load(News.class, 10);
+		System.out.println(news.getClass().getName()); 
+		
+//		session.close();
+//		System.out.println(news); 
+	}
+	@Test
+	public void testGet(){
+		News news = (News) session.get(News.class, 1);
+//		session.close();
+		System.out.println(news); 
+	}
+	@Test
+	public void testPersist(){
+		News news = new News();
+		news.setTitle("EE");
+		news.setAuthor("ee");
+		news.setDate(new Date());
+		news.setId(200); 
+		
+		session.persist(news); 
+	}
+	
+	@Test
+	public void testSave(){
+		News news = new News();
+		news.setTitle("CC");
+		news.setAuthor("cc");
+		news.setDate(new Date());
+		news.setId(100); //在save()之前setID无效
+		
+		System.out.println(news);		
+		session.save(news);
+		System.out.println(news);
+//		news.setId(101); //持久化对象的ID是不能被修改的
+	}
+	
+	@Test
 	public void testClear() {
 		News news1 = (News) session.get(News.class, 1);
 		session.clear();
