@@ -150,4 +150,18 @@ get():
   
 delete():  
 在不设定级联关系的情况下, 且 1 这一端的对象有 n 的对象在引用, 不能直接删除 1 这一端的对象  
-
+   
+5. One to many  
+映射 1 对多的那个集合属性     
+set: 映射 set 类型的属性, table: set 中的元素对应的记录放在哪一个数据表中. 该值需要和多对一的多的那个表的名字一致  
+inverse: 指定由哪一方来维护关联关系. 通常设置为 true, 以指定由多的一端来维护关联关系   
+cascade 设定级联操作. 开发时不建议设定该属性. 建议使用手工的方式来处理   
+order-by 在查询时对集合中的元素进行排序, order-by 中使用的是表的字段名, 而不是持久化类的属性名   
+\<set name="orders" table="ORDERS" inverse="true" order-by="ORDER_NAME DESC">  
+	\\执行多的表中的外键列的名字\  
+	\<key column="CUSTOMER_ID"></key>  
+	\\ 指定映射类型 \  
+	\<one-to-many class="Order"/>  
+\</set>  
+  
+see hibernateTest.java  
