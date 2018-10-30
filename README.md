@@ -106,18 +106,48 @@ III. 如何把 java.util.Date 映射为 DATE, TIME 和 TIMESTAMP ?
 
 例如:
 
-<property name="date" type="timestamp">
-    <column name="DATE" />
-</property>
-
-<property name="date" type="data">
-    <column name="DATE" />
-</property>
-
-<property name="date" type="time">
-    <column name="DATE" />
-</property>
-
+\<property name="date" type="timestamp">  
+    \<column name="DATE" />  
+\</property>  
+  
+\<property name="date" type="data">  
+    \<column name="DATE" />  
+\</property>  
+  
+\<property name="date" type="time">  
+    \<column name="DATE" />  
+\</property>  
+  
 其中 timestamp, date, time 既不是 Java 类型, 也不是标准 SQL 类型, 而是 hibernate 映射类型. 
 
 3. class 的 local variable's type is another class
+
+
+4. many to one mapping  
+/* 
+映射多对一的关联关系。 使用 many-to-one 来映射多对一的关联关系   
+name: 多这一端关联的一那一端的属性的名字  
+class: 一那一端的属性对应的类名  
+column: 一那一端在多的一端对应的数据表中的外键的名字  
+\<many-to-one name="customer" class="Customer" column="CUSTOMER_ID">\</many-to-one>  
+*/  
+save():  
+执行  save 操作: 先插入 Customer, 再插入 Order, 3 条 INSERT  
+先插入 1 的一端, 再插入 n 的一端, 只有 INSERT 语句.  
+先插入 Order, 再插入 Customer. 3 条 INSERT, 2 条 UPDATE  
+先插入 n 的一端, 再插入 1 的一端, 会多出 UPDATE 语句!  
+因为在插入多的一端时, 无法确定 1 的一端的外键值. 所以只能等 1 的一端插入后, 再额外发送 UPDATE 语句.  
+推荐先插入 1 的一端, 后插入 n 的一端  
+  
+get():  
+//1. 若查询多的一端的一个对象, 则默认情况下, 只查询了多的一端的对象. 而没有查询关联的  
+//1 的那一端的对象!  
+//2. 在需要使用到关联的对象时, 才发送对应的 SQL 语句.   
+//3. 在查询 Customer 对象时, 由多的一端导航到 1 的一端时,   
+//若此时 session 已被关闭, 则默认情况下  
+//会发生 LazyInitializationException 异常  
+//4. 获取 Order 对象时, 默认情况下, 其关联的 Customer 对象是一个代理对象!  
+  
+delete():  
+在不设定级联关系的情况下, 且 1 这一端的对象有 n 的对象在引用, 不能直接删除 1 这一端的对象  
+
