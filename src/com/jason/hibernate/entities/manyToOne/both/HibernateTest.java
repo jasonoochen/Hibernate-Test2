@@ -1,7 +1,5 @@
 package com.jason.hibernate.entities.manyToOne.both;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Connection;
